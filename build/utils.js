@@ -4,10 +4,20 @@ const config = require('../config')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const packageConfig = require('../package.json')
 
+exports.getAssetsSubDirectory = function() {
+  if (process.env.NODE_ENV === 'production' && process.env.CORDOVA_BUILD === true) {
+    console.log('cordova')
+    return config.mobile.assetsSubDirectory
+  }
+  if (process.env.NODE_ENV === 'production' && process.env.CORDOVA_BUILD === false) {
+    return config.build.assetsSubDirectory
+  }
+
+  return config.dev.assetsSubDirectory
+}
+
 exports.assetsPath = function (_path) {
-  const assetsSubDirectory = process.env.NODE_ENV === 'production'
-    ? config.build.assetsSubDirectory
-    : config.dev.assetsSubDirectory
+  const assetsSubDirectory = this.getAssetsSubDirectory()
 
   return path.posix.join(assetsSubDirectory, _path)
 }
